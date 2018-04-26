@@ -23,17 +23,30 @@ class SAM{
     }
 }
 
+struct servAddr{
+    AddressFamily family; // std.socket;
+    string addr;
+    uint port;
+
+   this(AddressFamily af, string ad, uint port){
+       this.family = af;
+       this.addr = ad;
+       this.port = port;
+   }
+
+}
+
 class I2pSocket{
-    Socket skdata;  
-    this(){
+    Socket skdata;
+    servAddr addr;
+    
+    this(AddressFamily af, string ad, uint port){
         this.skdata = new Socket();
-        // wsdata는 skdata로 치환
-        int ret = WSAStartup(MAKEWORD(2,2), &wsadata);
+        this.addr = servAddr(afm ad, port);
         
-        /*
-        if (ret != NO_ERROR)
-        print_error("Failed to initialize std.socket library");
-        */
+        if (this.skdata == null){
+            print_error("Failed to initialize std.socket library");
+        }
     }
 
     ~this(){
