@@ -14,15 +14,14 @@ import std.socket;
 immutable short SAM_BUFSIZE =            4096;
 immutable short I2P_DESTINATION_SIZE =   516;
 
-int I2pSocket_instances_ = 0
+int I2pSocket_instances_ = 0;
 
-class SAM{
-    static void print_error(string err){
-        // -- std.socket.lastSocketError
-        writeln(err, "(", lastSocketError() ,")");
-    }
+void print_error(string err){
+    // -- std.socket.lastSocketError
+    writeln(err, "(", lastSocketError() ,")");
 }
 
+/*
 struct servAddr{
     AddressFamily family; // std.socket;
     string addr;
@@ -34,17 +33,29 @@ struct servAddr{
        this.port = port;
    }
 
+}*/
+
+enum SessionStyle{
+    RAW = SocketType.RAW,
+    DATAGRAM = SocketType.DGRAM,
+    STREAM = SocketType.STREAM
 }
 
 class I2pSocket{
     Socket skdata;
-    servAddr addr;
+    AddressInfo info;
     
-    this(AddressFamily af, string ad, uint port){
-        this.skdata = new Socket();
-        this.addr = servAddr(afm ad, port);
+    this(AddressFamily af, string ad, ushort port){
+        // 소켓연결 정보
+        this.info.family = af; //-- AddressFamily
+        this.info.type = SessionStyle.STREAM; //-- SocketType 
+        this.info.protocol = ProtocolType.RAW; //-- ProtocolType
+        this.info.address = getAddress(ad, port)[0]; //-- Address
+
+        this.skdata = new Socket(info);
+        //this.addr = servAddr(af, ad, port);
         
-        if (this.skdata == null){
+        if (this.skdata){
             print_error("Failed to initialize std.socket library");
         }
     }
